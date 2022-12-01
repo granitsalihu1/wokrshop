@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Drawing tools</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      html, body, #map-canvas {
+        height: 70%;
+        margin: 0px;
+        padding: 0px
+      }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=drawing"></script>
+    <script>
+	
+var map; // Global declaration of the map
+			var iw = new google.maps.InfoWindow(); // Global declaration of the infowindow
+			var lat_longs = new Array();
+			var markers = new Array();
+			var drawingManager;
+			function initialize() {
+				 var myLatlng = new google.maps.LatLng(40.9403762, -74.1318096);
+				var myOptions = {
+			  		zoom: 13,
+					center: myLatlng,
+			  		mapTypeId: google.maps.MapTypeId.ROADMAP}
+				map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+				drawingManager = new google.maps.drawing.DrawingManager({
+				drawingMode: google.maps.drawing.OverlayType.POLYGON,
+  				drawingControl: true,
+  				drawingControlOptions: {
+  					position: google.maps.ControlPosition.TOP_CENTER,
+					drawingModes: [google.maps.drawing.OverlayType.POLYGON]
+				},
+						polygonOptions: {
+							editable: true
+						}
+			});
+			drawingManager.setMap(map);
+			
+			google.maps.event.addListener(drawingManager, "overlaycomplete", function(event) {
+				var newShape = event.overlay;
+				newShape.type = event.type;
+			});
+
+            google.maps.event.addListener(drawingManager, "overlaycomplete", function(event){
+                overlayClickListener(event.overlay);
+                $('#vertices').val(event.overlay.getPath().getArray());
+            });
+        }
+function overlayClickListener(overlay) {
+    google.maps.event.addListener(overlay, "mouseup", function(event){
+        $('#vertices').val(overlay.getPath().getArray());
+    });
+}
+ initialize();
+
+$(function(){
+    $('#save').click(function(){
+        //iterate polygon vertices?
+    });
+});
+
+    </script>
+  </head>
+  <body>
+    <div id="map-canvas"></div>
+    <form method="post" accept-charset="utf-8" id="map_form">
+    <input type="text" name="vertices" value="" id="vertices"  />
+    <input type="button" name="save" value="Save!" id="save"  />
+</form>
+  </body>
+</html>
